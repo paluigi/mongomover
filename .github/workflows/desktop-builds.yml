@@ -1,17 +1,8 @@
 name: Desktop Build (Linux, macOS, Windows)
 
 on:
-  # Runs on push to any of the below branches
-  push:
-    branches:
-      - master
-      - main
-  # Runs on pull request events that target one of the below branches
-  pull_request:
-    branches:
-      - master
-      - main
-
+  release:
+    types: [published]
   # Allows you to run this workflow manually from the Actions tab of the repository
   workflow_dispatch:
 
