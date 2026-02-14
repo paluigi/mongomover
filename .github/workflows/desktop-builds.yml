@@ -78,6 +78,10 @@ jobs:
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
 
+      - name: Increase file descriptor limit
+        run: |
+          ulimit -n 65536
+
       - name: Flet Build macOS
         run: |
           flutter config --no-analytics
@@ -114,6 +118,8 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
 
       - name: Flet Build Windows
+        env:
+          PYTHONIOENCODING: utf-8
         run: |
           flutter config --no-analytics
           flet build windows --verbose --no-rich-output --build-number=$env:BUILD_NUMBER --build-version=$env:BUILD_VERSION
