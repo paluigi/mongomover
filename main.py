@@ -4,7 +4,7 @@ import flet as ft
 
 
 def main(page: ft.Page) -> None:
-    VNUM = "2024.01"
+    VNUM = "2026.01"
     def mongomove(
         e
         # origin_connection: str,
@@ -72,7 +72,7 @@ def main(page: ft.Page) -> None:
             source_error = ft.AlertDialog(
                 title=ft.Text("Source DB Connection Error"),
             )
-            page.open(source_error)
+            page.show_dialog(source_error)
             return 1
         # Get the total count of documents to be moved
         details.controls = []
@@ -106,12 +106,12 @@ def main(page: ft.Page) -> None:
             destination_error = ft.AlertDialog(
                 title=ft.Text("Destination DB Connection Error"),
             )
-            page.open(destination_error)
+            page.show_dialog(destination_error)
             return 1
 
         # Counter for the number of documents transferred
         counter = 0
-        # Loop to operate 100 documents at a time
+        # Loop to operate N documents at a time
         while True:
             # Wat one sec to relief the server
             time.sleep(1)
@@ -151,26 +151,26 @@ def main(page: ft.Page) -> None:
         # return number of records transferred
         return counter
 
-    origin_conn = ft.TextField(label="Connection string for the source MongoDB instance")
-    origin_db = ft.TextField(label="Name of the database containing the source collection")
-    origin_coll = ft.TextField(label="Name of the source collection")
-    dest_conn = ft.TextField(label="Connection string for the destination MongoDB instance")
-    dest_db = ft.TextField(label="Name of the database containing the destination collection")
-    dest_coll = ft.TextField(label="Name of the destination collection")
+    origin_conn = ft.TextField(label="Connection string for the source MongoDB instance", expand=True)
+    origin_db = ft.TextField(label="Name of the database containing the source collection", expand=True)
+    origin_coll = ft.TextField(label="Name of the source collection", expand=True)
+    dest_conn = ft.TextField(label="Connection string for the destination MongoDB instance", expand=True)
+    dest_db = ft.TextField(label="Name of the database containing the destination collection", expand=True)
+    dest_coll = ft.TextField(label="Name of the destination collection", expand=True)
     batch_size = ft.TextField(
         label="Number of documents to transfer in each batch",
         input_filter=ft.InputFilter(allow=True, regex_string=r"^[0-9]*$", replacement_string=""),
-        value=100
+        value=100,
+        expand=True
     )
     delete = ft.Checkbox(label="Delete documents from the source collection after transfer?")
-    trigger = ft.ElevatedButton("Transfer", on_click=mongomove)
+    trigger = ft.Button("Transfer", on_click=mongomove)
     details = ft.Column([])
     disclaimer = ft.Text("This tool is provided AS-IS, without warranty of any kind. Use at your own risk.", size=12)
     credits = ft.Row([
         ft.Text("Source code:", size=12),
-        ft.ElevatedButton(
-            text="GitHub",
-            tooltip="GitHub",
+        ft.Button(
+            content="GitHub",
             url="https://github.com/paluigi/mongomover")
     ])
     version = ft.Text(f"Version: {VNUM}", size=12)
@@ -181,18 +181,33 @@ def main(page: ft.Page) -> None:
                 [
                 ft.Text("Mongomover", size=50, weight=ft.FontWeight.BOLD),
                 ft.Text("Transfer records between MongoDB instances"),
-                ft.Text("Source collection", size=25, weight=ft.FontWeight.BOLD),
-                origin_conn,
-                origin_db,
-                origin_coll,
-                ft.Text(value="Destination collection", size=25, weight=ft.FontWeight.BOLD),
-                dest_conn,
-                dest_db,
-                dest_coll,
+                ft.Row([
+                    ft.Column(
+                        width=220,
+                        expand=True,
+                        controls=[
+                        ft.Text("Source collection", size=25, weight=ft.FontWeight.BOLD),
+                        origin_conn,
+                        origin_db,
+                        origin_coll,
+                    ]),
+                    ft.VerticalDivider(width=50),
+                    ft.Column(
+                        width=220,
+                        expand=True,
+                        controls=[
+                        ft.Text(value="Destination collection", size=25, weight=ft.FontWeight.BOLD),
+                        dest_conn,
+                        dest_db,
+                        dest_coll,
+                    ])
+
+                ]),
                 batch_size,
                 delete, 
                 trigger,
                 details,
+                ft.Divider(height=20),
                 disclaimer,
                 credits,
                 version
@@ -204,4 +219,4 @@ def main(page: ft.Page) -> None:
     page.scroll = ft.ScrollMode.ADAPTIVE
     page.update()
 
-ft.app(main)
+ft.run(main)
