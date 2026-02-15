@@ -115,14 +115,21 @@ jobs:
           mv artifacts/windows-build-artifact "artifacts/windows-${TAG_NAME}"
           ls -la artifacts/
 
+      - name: Zip artifacts
+        run: |
+          TAG_NAME="${GITHUB_REF#refs/tags/}"
+          cd artifacts
+          zip -r "linux-${TAG_NAME}.zip" "linux-${TAG_NAME}"
+          zip -r "macos-${TAG_NAME}.zip" "macos-${TAG_NAME}"
+          zip -r "windows-${TAG_NAME}.zip" "windows-${TAG_NAME}"
+          ls -la
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           name: "Release ${{ github.ref_name }}"
           files: |
-            artifacts/linux-*
-            artifacts/macos-*
-            artifacts/windows-*
+            artifacts/*.zip
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
